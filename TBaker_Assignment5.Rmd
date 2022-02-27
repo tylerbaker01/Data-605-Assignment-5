@@ -1,0 +1,264 @@
+---
+title: "Data 605 Week 5"
+author: "Tyler Baker"
+date: "2/27/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(stats)
+```
+
+# 1
+Bayes' Theroem
+P(A|B) = P(B|A)P(A)/P(B)
+
+## Part a
+
+P(disease|positive) = (P(positive|disease)P(disease))/(P(positive|disease)P(disease) + P(positive|non-disease)P(non-disease))
+```{r}
+sensitivity = .96
+# sensitivy = P(positive|disease)
+specific = .98
+false_positive = 1-specific
+#false_positive = P(positive|non-disease)
+prevelence = .001
+# prevelence = P(disease)
+disease_free = 1 - prevelence
+# disease_free = P(non-disease)
+
+solution = (sensitivity * prevelence)/((sensitivity * prevelence)+(false_positive * disease_free))
+
+print(solution)
+```
+
+## Part b
+
+I'm not sure where to even start. I don't know what 'per positive case total' means, nor do I know what exactly is meant by 'per administration'.
+
+# 2
+
+Binomail
+b(n,p,j) = (n choose j)(p^j)((1-p)^(n-j)
+
+## part a
+
+What is the probability that after 24 months you received exactly 2 inspections
+```{r}
+n = 24
+j = 2
+p = .05
+sol_two_a = (choose(n,j))*(p^j)*((1-p)^(n-j))
+print(sol_two_a)
+```
+
+## part b
+
+Goal: find 1 - b(24, .05, 1) - b(24, 0.05, 0)
+```{r}
+one_visit <- (choose(24,1))*(p)*((1-p)^23)
+no_visit <- (choose(24,0))*((1-p)^24)
+sol_two_b <- 1 - one_visit - no_visit
+print(sol_two_b)
+```
+
+## part c
+
+```{r}
+sol_two_c <- 1 - sol_two_b
+print(sol_two_c)
+```
+
+## part d
+
+EV = sum(P(x_i) * x_i)
+
+```{r}
+range <- c(0:24)
+values<- c()
+for (i in range){
+  x<- (choose(24,i))*(p^i)*((1-p)^(24-i))
+  values <- append(values, x)
+}
+ev <- sum(values * range)
+```
+
+## part e
+
+```{r}
+sd <- sum(values * (range - ev)^2)
+```
+
+# 3
+Poisson
+p(x, l) = (e^(-l)l^(x))/x!
+
+l = average number of events given a time interval
+
+## part a
+```{r}
+l <- 10
+x <- 3
+print((exp(1)^(-l)*l^(x))/factorial(x))
+```
+
+## part b
+
+find 1 - probability of less than 10 people showing up per hour.
+```{r}
+range <- c(0:10)
+values <- c()
+for (i in range){
+  x <- (exp(1)^(-l)*l^(i))/factorial(i)
+  values <- append(values, x)
+}
+print(1 - sum(values))
+```
+
+## part c
+
+I would expect 80 people to arrive in 8 hours.
+
+## part d
+
+```{r}
+print(sqrt(10))
+```
+
+## part e
+
+I'm not sure what the question means. 
+
+# 4
+Hypergeometric
+
+h(n,a,k) = ((choose(k,x))*(choose((n-k), (a-x))))/(choose(n,a))
+
+n = sample size
+a = number of picks(without replacement)
+k = successes
+a - k = failures
+x = selecting correctly
+
+## part a
+
+```{r}
+n = 30
+k = 15
+a = 6
+x = 5
+
+print(((choose(k,x))*(choose((n-k), (a-x))))/(choose(n,a)))
+```
+
+## part b
+
+I would have expected my subordinate to send 3 nurses and 3 non-nurses.
+
+# 5
+Geometric
+P(X=x) = ((1-p)^(x-1))*p
+
+## part a
+```{r}
+p <- .001
+x <- 1200
+print(((1-p)^(x-1))*p)
+```
+
+## part b
+```{r}
+x <- 1500
+print(((1-p)^(x-1))*p)
+```
+
+## part c
+
+```{r}
+mean <- 1/p
+print(mean)
+```
+
+## part d
+
+P(B|A) = P(A and B)/ P(A)
+P(B|A) = P(A|B)P(B)/P(A)
+
+```{r}
+p_of_a <- ((1-p)^(1200-1))*p
+p_of_b <- ((1-p)^(100-1))*p
+p_of_a_inter_p_of_b<- p_of_b - p_of_a
+p_of_a_given_b <- p_of_a_inter_p_of_b/ p_of_b
+
+print((p_of_a_given_b * p_of_b)/p_of_a)
+```
+
+This isn't correct. I know that I can't have a probability larger than 1.
+
+# 6
+Because the question is dealing with time intervals we should use the Poisson distribution.
+
+(exp(1)^(-l)*l^(x))/factorial(x)
+
+## part a
+```{r}
+l <- 1
+
+# solution will be to find the values when x =0, 1, 2. Then subtract the values from 1.
+
+range <- c(0:2)
+values <- c()
+for (i in range){
+  x <- (exp(1)^(-l)*l^(i))/factorial(i)
+  values <- append(values, x)
+}
+print(1 - sum(values))
+```
+
+## part b
+
+The expected value is the mean which is about 1 as stated in the problem.
+
+# 7
+
+## part a
+
+Since, the distribution is uniformly distributed we know that that means are function is flat from 0 minutes to 30 minutes. Thus, we know that there is a 2/3 chance that the patient will wait more than 10 minutes.
+
+## part b
+
+I think we can make this question a lot easier by simply rephrasing the question. Instead we can simply think of the probability that the patient waits for longer than 15 minutes. This is 1/2.
+
+## part c 
+
+The mean is 15 minutes.
+
+# 8
+Exponential distribution
+m = 1 / mu
+pdf = m*(exp(1)^(-mx))
+
+## part a
+
+exepcted failure time = 10 years
+
+## part b
+
+standard deviation = 10 years
+
+## part c
+```{r}
+m = .1
+x = 8
+print(m*(exp(1)^((-m)*x)))
+```
+
+## part d
+```{r}
+m = .1
+x = 8
+integrand <- function(x) {m*(exp(1)^((-m)*x))}
+integrate(integrand, lower = 8, upper = 10)
+```
+
